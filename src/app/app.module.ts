@@ -5,6 +5,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 
+import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
+import { InMemoryDatabase } from './in-memory-database';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -12,7 +15,10 @@ import { CoreModule } from './core/core.module';
   imports: [
     CoreModule,
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientInMemoryWebApiModule.forRoot(InMemoryDatabase)
+  ],
+  exports:[
   ],
   providers: [],
   bootstrap: [AppComponent]
