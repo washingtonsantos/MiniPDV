@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 
+import { Cliente } from '../../clientes/shared/models/cliente';
+import { RelatorioService } from '../shared/services/relatorio.service';
+
 @Component({
   selector: 'app-relatorio',
   templateUrl: './relatorio.component.html',
@@ -7,9 +10,18 @@ import { Component, OnInit } from '@angular/core';
 })
 export class RelatorioComponent implements OnInit {
 
-  constructor() { }
+  clientes: Cliente[] = [];
+  cliente: Cliente = null;
+
+  customSearchFnCliente: string;
+
+  constructor(private relatorioService: RelatorioService) { }
 
   ngOnInit() {
+  }
+
+  gerarRelatorio() {
+    this.relatorioService.gerarPDF();
   }
 
 }
