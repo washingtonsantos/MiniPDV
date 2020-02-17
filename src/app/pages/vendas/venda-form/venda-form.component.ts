@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
+declare var $: any;
 
 import { Produto } from '../../produtos/shared/models/produto.model';
 import { ProdutoService } from '../../produtos/shared/services/produto.service';
@@ -8,8 +9,8 @@ import { ClienteService } from '../../clientes/shared/services/cliente.service';
 import { Vendedor } from '../../vendedores/shared/models/vendedor';
 import { VendedorService } from '../../vendedores/shared/services/vendedor.service';
 import { PedidoitensService } from '../../pedidos/pedidoitens/shared/services/pedidoitens.service';
-import { FilterPipe } from '../../../pipes/filterpipe/filterpipe.pipe'
 import { Pedidocabeca } from '../../pedidos/pedidocabeca/shared/models/pedidocabeca';
+import { NgSelectConfig } from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-venda-form',
@@ -20,6 +21,8 @@ export class VendaFormComponent implements OnInit {
 
   pedidoItens: Pedidoitens[] = [];
   produtos: Produto[] = [];
+  produtosFilter: Produto[] = [];
+  produto: Produto = new Produto();
   clientes: Cliente[] = [];
   cliente: Cliente = null;
   vendedores: Vendedor[] = [];
@@ -27,13 +30,30 @@ export class VendaFormComponent implements OnInit {
 
   // produtosEncontrados: string;
   searchText: string = '';
-  // valorTotal: number;
+  searchDescricao: string = 'descrição do produto';
+  valorTotal: number = 0;
+  produtoQTD: number;
+  produtoPreco: number = 0;
+
+  mdlSampleIsOpen : boolean = false;
+
+  @HostListener('document:keyup', ['$event'])
+  handleDeleteKeyboardEvent(event: KeyboardEvent) {
+    if(event.key === 'F8')
+    {
+      this.searchDescricao = '';
+      this.open();
+    }
+  }
 
   constructor(
     private produtoService: ProdutoService,
     private clienteService: ClienteService,
     private vendedorService: VendedorService,
-    private pedidoItensService: PedidoitensService) {}
+    private pedidoItensService: PedidoitensService,
+    private config: NgSelectConfig) {
+      this.config.notFoundText = 'Item não encontrado';
+    }
 
   ngOnInit() {
     this.getClientes();
@@ -43,13 +63,17 @@ export class VendaFormComponent implements OnInit {
 
   getClientes() {
     this.clienteService.getAll().subscribe(
-      clientes => this.clientes = clientes.sort((a, b) => a.id - b.id)
+      clientes => this.clientes = clientes.
+      filter((f) => f.credito > 0).
+      sort((a, b) => a.id - b.id)
     );
   }
 
   getVendedores() {
     this.vendedorService.getAll().subscribe(
-      vendedores => this.vendedores = vendedores.sort((a, b) => a.id - b.id)
+      vendedores => this.vendedores = vendedores.
+      filter((f) => f.ativo === true).
+      sort((a, b) => a.id - b.id)
     );
   }
 
@@ -60,17 +84,24 @@ export class VendaFormComponent implements OnInit {
   }
 
   addProduto(produto: Produto) {
-    let pedido = this.pedidoItens.find((existe) => existe.produto.id === produto.id);
 
-    if (this.pedidoItens.length > 0 && pedido)  {
+    produto = this.produto;
+
+    let pedido = this.pedidoItens.length > 0 ? this.pedidoItens.find((existe) => existe.produto.id === produto.id) : null;
+
+    if (this.pedidoItens.length > 0 && (pedido !== undefined || pedido != null ))  {
       let qtdATual = Number(pedido.quantidade);
       const qtd = qtdATual += 1;
       pedido.preco = produto.preco * qtd;
       pedido.quantidade = qtd;
     }
     else {
-      this.pedidoItens.push(new Pedidoitens(this.pedidoItens.length + 1, 0, produto, 1, produto.preco));
+      this.pedidoItens.push(new Pedidoitens(this.pedidoItens.length + 1, 0, produto, this.produtoQTD, this.produtoPreco ));
     }
+
+    this.limparDadosFiltros(true);
+    this.AtualizaValorTotal();
+
   }
 
   editPedidoItem(pedidoItem: Pedidoitens) {
@@ -81,9 +112,6 @@ export class VendaFormComponent implements OnInit {
       else {
         pedidoItem.preco = Number(pedidoItem.quantidade) * pedidoItem.produto.preco;
       }
-
-      // this.AtualizaValorTotal(this.pedidoItens.find((v) => v.produto.preco).preco);
-
    }
   }
 
@@ -93,7 +121,7 @@ export class VendaFormComponent implements OnInit {
     if (item.quantidade > 1)  {
       let qtdATual = Number(item.quantidade);
       const qtd = qtdATual -= 1;
-      item.preco = item.preco * qtd;
+      item.preco = qtd * this.produtos.find(x => x.id === item.produto.id).preco;
       item.quantidade = qtd;
     }
     else {
@@ -105,15 +133,19 @@ export class VendaFormComponent implements OnInit {
      }
 
     }
+
+    this.AtualizaValorTotal();
   }
 
-  // AtualizaValorTotal(valorTotal: number) {
-  //   this.valorTotal = valorTotal;
-  // }
+  AtualizaValorTotal() {
+    this.valorTotal = this.pedidoItens.reduce((sum, current) => sum + current.preco, 0);
+  }
 
-  gravarPedido(pedidoItens: Pedidoitens) {
+  gravarPedido(pedidoItens: Pedidoitens[]) {
     if (this.cliente && this.vendedor && pedidoItens) {
       new Pedidocabeca(0, this.cliente, this.vendedor, new Date(), 0);
+      alert('Pedido Gravado com sucesso');
+      this.limparDadosTela();
     }
   }
 
@@ -121,8 +153,109 @@ export class VendaFormComponent implements OnInit {
     this.cliente = cliente;
   }
 
-  getCliente() {
+  customSearchFnCliente(term: string, item: Cliente) {
+    term = term.toLowerCase();
+    return item.nome.toLowerCase().indexOf(term) > -1 || item.nome.toLowerCase() === term || item.id === Number(term);
+}
 
+ customSearchFnVendedor(term: string, item: Vendedor) {
+  term = term.toLowerCase();
+  return item.nome.toLowerCase().indexOf(term) > -1 || item.nome.toLowerCase() === term || item.id === Number(term);
+}
+
+filtrarProdutoPorCodigo(searchText: string) {
+
+  if (searchText === ''){
+    this.produtoQTD = null;
+    this.produtoPreco = null;
+    this.searchDescricao = 'descrição do produto';
   }
+  else {
+    this.produto = this.produtos.find(it => it.id === Number(searchText));
+
+    if (this.produto){
+      this.produtoQTD = 1;
+      this.produtoPreco = this.produto.preco;
+      this.searchDescricao = this.produto.descricao;
+    }
+    else
+        this.limparDadosFiltros(false);
+  }
+
+}
+
+filtrarProdutoPorDescricao(searchDescricao: string) {
+
+
+  if (searchDescricao === '') {
+    this.produtoQTD = null;
+    this.produtoPreco = null;
+    this.searchDescricao = '';
+    this.getProdutos();
+  }
+  else {
+    this.getProdutos();
+    this.produtosFilter = this.produtos.
+    filter((f) => f.descricao.toLowerCase().indexOf(searchDescricao.toLowerCase()) > -1 || f.descricao.toLowerCase() === searchDescricao.toLowerCase()).
+    sort((a, b) => a.id - b.id);
+
+    // this.produtos = this.produtosFilter;
+
+    this.open();
+  }
+
+}
+
+editouQtdProduto() {
+  if(String(this.produtoQTD) === '' || String(this.produtoQTD).trim() === '' || this.produtoQTD === undefined){
+    this.produtoPreco = 0;
+  }
+  else
+  {
+    this.produto = this.produtos.find(it => it.id === Number(this.searchText));
+    this.produtoPreco = this.produto.preco  * this.produtoQTD;
+  }
+}
+
+checkProduto(produto: Produto) {
+
+  this.produto = this.produtos.find(it => it.id === produto.id);
+  this.produtoQTD = 1;
+  this.produtoPreco = this.produto.preco;
+  this.searchText = String(this.produto.id);
+  this.searchDescricao = this.produto.descricao;
+
+  this.hide();
+}
+
+limparDadosTela() {
+  this.cliente = new Cliente();
+  this.vendedor = new Vendedor();
+  this.pedidoItens = [];
+  this.searchText = '';
+  this.produtoQTD = null;
+  this.produtoPreco = null;
+  this.searchDescricao = '';
+}
+
+
+limparDadosFiltros(limparCodigo: boolean) {
+
+  this.produtoQTD = null;
+  this.produtoPreco = null;
+  this.searchDescricao = 'descrição do produto';
+
+if (limparCodigo)
+   this.searchText = '';
+
+}
+
+open() {
+  $('#ModalProdutos').modal('show')
+}
+
+hide() {
+  $('#ModalProdutos').modal('hide')
+}
 
 }

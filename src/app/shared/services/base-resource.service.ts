@@ -5,9 +5,6 @@ import { map, catchError } from 'rxjs/operators';
 
 import { BaseResourceModel } from '../models/base-resource.model';
 
-@Injectable({
-  providedIn: 'root'
-})
 export abstract class BaseResourceService<T extends BaseResourceModel> {
 
   protected http: HttpClient;

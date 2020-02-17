@@ -1,4 +1,7 @@
 <div class="container">
+
+
+
     <div class="row">
         <!-- OPÇÕES -->
         <div class="col">
@@ -6,7 +9,7 @@
             <div class="input-group mb-3 mr-2">
 
                 <!-- ESCOLHA CLIENTE #INICIO -->
-                <div class="input-group-prepend ml-2">
+                <!-- <div class="input-group-prepend ml-2">
                     <span
                         class="input-group-text"
                         id="basic-addon1"
@@ -15,15 +18,15 @@
                     >
                         Cliente
                     </span>
-                </div>
-                <ng-select
+                </div> -->
+                <ng-select class="mr-4"
                     style="width: 250px;"
                     [items]="clientes"
                     [virtualScroll]="true"
                     bindLabel="nome"
                     placeholder="Selecione o cliente"
                     [(ngModel)]="cliente"
-                    [searchFn]="getCliente()"
+                    [searchFn]="customSearchFnCliente"
                 >
                     <ng-template
                         ng-option-tmp
@@ -36,7 +39,7 @@
                 <!-- ESCOLHA CLIENTE #FIM -->
 
                 <!-- ESCOLHA VENDEDOR #INICIO -->
-                <div class="input-group-prepend ml-2">
+                <!-- <div class="input-group-prepend ml-2">
                     <span
                         class="input-group-text"
                         id="basic-addon1"
@@ -45,7 +48,7 @@
                     >
                         Vendedor
                     </span>
-                </div>
+                </div> -->
                 <ng-select
                     style="width: 250px;"
                     [items]="vendedores"
@@ -53,7 +56,7 @@
                     bindLabel="nome"
                     placeholder="Selecione o vendedor"
                     [(ngModel)]="vendedor"
-                    [searchFn]="getCliente"
+                    [searchFn]="customSearchFnVendedor"
                 >
                     <ng-template
                         ng-option-tmp
@@ -63,38 +66,145 @@
                         <div>{{ item.id + ' - ' + item.nome }}</div>
                     </ng-template>
                 </ng-select>
+
+                <div class="ml-5 text-bottom">
+                  <span class="align-bottom">F8 - Filtrar produto por Descrição</span>
+                </div>
+
                 <!-- ESCOLHA VENDEDOR #FIM -->
 
-                <!-- ESCOLHA CLIENTE #INICIO -->
-                <div class="input-group mb-3 mt-2 ml-2 mr-2">
-                    <div class="input-group-prepend">
-                        <span
-                            class="input-group-text"
-                            id="basic-addon3"
-                        >
-                            Buscar clientes
-                        </span>
-                    </div>
+                <!-- ESCOLHA PRODUTO #INICIO -->
+                <div class="input-group mb-2 mt-2 mr-2">
                     <input
                         type="text"
-                        placeholder="Pesquise por código ou descrição do produto"
+                        placeholder="Pesquise por código"
                         [(ngModel)]="searchText"
+                        (ngModelChange)="filtrarProdutoPorCodigo(searchText)"
                         class="form-control"
                         id="basic-url"
                         aria-describedby="basic-addon3"
                     >
+                    <!-- <button class="btn btn-primary">Search</button> -->
+
+                   <!-- <input
+                      [(ngModel)]="searchDescricao"
+                      (click)="filtrarProdutoPorDescricao(searchDescricao)"
+                      type="text"
+                      placeholder="descrição do produto"
+                      class="form-control"
+                      id="basic-url"
+                      aria-describedby="basic-addon3"> -->
+
+                      <!-- (ngModelChange)="filtrarProdutoPorDescricao(searchDescricao)" -->
+                      <input readonly
+                      class="form-control-plaintext"
+                      value="{{searchDescricao}}"
+                      type="button"
+                      placeholder="descrição do produto"
+                      class="form-control"
+                      id="basic-url"
+                      aria-describedby="basic-addon3">
+
+                    <input
+                    type="text" editable="false"
+                    placeholder="quantidade do produto"
+                    [(ngModel)]="produtoQTD"
+                    (ngModelChange)="editouQtdProduto()"
+                    class="form-control"
+                    id="basic-url"
+                    aria-describedby="basic-addon3"
+                >
+                <input
+                type="text" editable="false"
+                placeholder="preço do produto"
+                [(ngModel)]="produtoPreco"
+                class="form-control"
+                id="basic-url"
+                aria-describedby="basic-addon3"
+            >
+            <button class="btn btn-primary mb-2 ml-2 mr-2" *ngIf="produtoQTD > 0" (click)="addProduto(null)">Confirmar</button>
                 </div>
-                <!-- ESCOLHA CLIENTE #FIM -->
+                <!-- ESCOLHA PRODUTO #FIM -->
 
             </div>
 
         </div>
-
     </div>
+
+     <!-- Confirmation Dialog -->
+     <div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true" id="ModalProdutos">
+      <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-lg" role="document">
+
+        <div class="modal-content">
+
+
+        <div class="modal-header">
+            <input
+                        [(ngModel)]="searchDescricao"
+                        (ngModelChange)="filtrarProdutoPorDescricao(searchDescricao)"
+                        type="text"
+                        placeholder="FILTRAR POR DESCRIÇÃO DO PRODUTO"
+                        class="form-control"
+                        id="basic-url"
+                        aria-describedby="basic-addon3">
+        </div>
+
+        <div class="class modal-body">
+            <div class="table-responsive">
+                  <table
+                      class="table"
+                      *ngIf="produtosFilter.length > 0 && searchDescricao != ''"
+                  >
+                      <thead class="thead-dark">
+                          <tr>
+                              <th scope="col">Código</th>
+                              <th scope="col">Descrição</th>
+                              <th scope="col">Unidade</th>
+                              <th scope="col">Estoque</th>
+                              <th scope="col">Preço</th>
+                              <th></th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr *ngFor="let produto of produtosFilter; index as i;">
+                              <th style="width: 50px;">{{ produto.id }}</th>
+                              <td style="width: 150px;">{{ produto.descricao }}</td>
+                              <td style="width: 50px;">{{ produto.unidade }}</td>
+                              <td style="width: 50px;">{{ produto.estoque }}</td>
+                              <td style="width: 100px;">{{ produto.preco | currency:'R$' }}</td>
+                              <td>
+                                  <button title="Selecionar"
+                                      class="btn btn-primary 	fas fa-check-circle"
+                                      (click)="checkProduto(produto)">
+                                  </button>
+                              </td>
+                          </tr>
+                          <tr>
+                          </tr>
+                      </tbody>
+                  </table>
+            </div>
+            <div *ngIf="produtosFilter.length === 0 && searchDescricao.length > 0">
+              <label style="color: red;">NENHUM PRODUTO ENCONTRADO</label>
+            </div>
+        </div>
+
+
+      </div>
+       </div>
+    </div>
+
+
+     <!-- End of Confirmation Dialog -->
+     <div class="row ml-2">
+      <div *ngIf="searchText.length > 0 && produto === undefined">
+        <label style="color: red;">NENHUM PRODUTO ENCONTRADO</label>
+      </div>
+     </div>
 
     <div class="row">
 
-        <div class="col">
+        <!-- <div class="col">
             <div class="card shadow">
               <div class="card-header">Produtos</div>
               <div class="card-body">
@@ -121,11 +231,10 @@
                               <td style="width: 50px;">{{ produto.estoque }}</td>
                               <td style="width: 100px;">{{ produto.preco | currency:'R$' }}</td>
                               <td>
-                                  <button
+                                  <button title="Adicionar"
                                       class="btn btn-primary"
                                       (click)="addProduto(produto)"
-                                  >
-                                      +
+                                  >+
                                   </button>
                               </td>
                           </tr>
@@ -140,11 +249,13 @@
               </div>
 
             </div>
-        </div>
+        </div> -->
+
+
 
         <div class="col">
             <div class="card shadow">
-                <div class="card-header">Itens Adicionados</div>
+                <div class="card-header fas fa-shopping-basket">Itens Adicionados</div>
                 <div class="card-body">
                     <table
                         class="table"
@@ -161,11 +272,13 @@
                         <tbody>
                             <tr *ngFor="let item of pedidoItens; index as i;">
                                 <td>{{ item.produto?.descricao }}</td>
-                                <td><input type="text" style="width: 50px;" [(ngModel)]="item.quantidade" (ngModelChange)="editPedidoItem(item)" ></td>
-                                <td><input type="text" style="width: 100px;" [(ngModel)]="item.preco" ></td>
-                                <!-- <td style="width: 100px;">{{ pedido?.preco | currency:'R$' }}</td> -->
+                                <td>{{ item.quantidade }}</td>
+                                <td *ngIf="item.preco >= 10">{{ item.preco | currency: 'R$' }}</td>
+                                <td *ngIf="item.preco < 10">{{ item.preco | currency: 'R$' }}</td>
+                                <!-- <td><input type="text" style="width: 50px;" [(ngModel)]="item.quantidade" (ngModelChange)="editPedidoItem(item)" ></td> -->
+                                <!-- <td><input type="text" style="width: 100px;" [(ngModel)]="item.preco" ></td> -->
                                 <td>
-                                    <button class="btn btn-danger" (click)="removerItem(item)">-</button>
+                                    <button class="btn btn-danger fas fa-trash-alt" title="Remover" (click)="removerItem(item)"></button>
                                 </td>
                             </tr>
                             <tr>
@@ -177,10 +290,11 @@
                 <div class="card-footer">
                   <div  *ngIf="pedidoItens.length > 0 && cliente != null && vendedor != null">
                     <div class="d-flex justify-content-stars">
-                      <label>Valor Total R$ {{ valorTotal }}</label>
+                      <label *ngIf="valorTotal >= 10">Valor Total R$ {{ valorTotal | number: '2.2' }}</label>
+                      <label *ngIf="valorTotal < 10">Valor Total R$ {{ valorTotal | number: '1.2' }}</label>
                     </div>
                     <div class="d-flex justify-content-end">
-                      <button
+                      <button title="Gravar"
                            class="btn btn-success " (click)="gravarPedido(pedidoItens)"
                          >
                           Gravar
@@ -190,39 +304,5 @@
                 </div>
             </div>
         </div>
-
-        <!-- <div class="col ml-2 mr-2">
-     <div class="card">
-      <table class="table" *ngIf="pedidoItens.length > 0">
-        <thead class="thead-dark">
-          <tr>
-            <th scope="col">Produto</th>
-            <th scope="col">Quantidade</th>
-            <th scope="col">Preço</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let pedido of pedidoItens; index as i;">
-            <td>{{ pedido.produto?.descricao }}</td>
-            <td>{{ pedido.quantidade }}</td>
-            <td style="width: 100px;"> {{ pedido?.preco | currency:'R$' }}</td>
-            <td><button class="btn btn-success">-</button></td>
-          </tr>
-          <tr>
-
-            <div>
-              <pre>
-                {{ pedidoItens | json }}
-              </pre>
-            </div>
-        </tbody>
-      </table>
-      <div *ngIf="pedidoItens.length === 0">
-        Nenhum produto Adicionado
-      </div>
-     </div>
-   </div> -->
-
     </div>
 </div>
