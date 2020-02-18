@@ -4,15 +4,18 @@ import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 
 import { BaseResourceModel } from '../models/base-resource.model';
+import { Message } from 'primeng/api/primeng-api';
 
 export abstract class BaseResourceService<T extends BaseResourceModel> {
 
+  messagesWeightTest: Message[] = [];
+  weightConfirmed: boolean = false;
   protected http: HttpClient;
 
   constructor(
     protected apiPath: string,
     protected injector: Injector,
-    protected jsonDataToResourceFn: (jsonData: any) => T
+    protected jsonDataToResourceFn: (jsonData: any) => T,
   ) { this.http = injector.get(HttpClient); }
 
   getAll(): Observable<T[]> {
@@ -31,12 +34,20 @@ export abstract class BaseResourceService<T extends BaseResourceModel> {
     )
   }
 
+  delete(id: number): Observable<any> {
+    const url = `${this.apiPath}/${id}`;
+    return this.http.delete(url).pipe(
+      map(() => true),
+      catchError(this.handleError)
+    );
+  }
+
   // PROTECTED METHODS
   protected jsonDataToResources(jsonData: any[]): T[] {
     const resources: T[] = [];
     jsonData.forEach(
       element => resources.push(this.jsonDataToResourceFn(element))
-      );
+    );
     return resources;
   }
 

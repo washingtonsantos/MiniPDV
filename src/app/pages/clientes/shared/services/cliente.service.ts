@@ -16,8 +16,8 @@ export class ClienteService extends BaseResourceService<Cliente> {
   public getClientePorIdOuNome(filtro: any): Observable<Cliente> {
     const url = `${this.apiPath}/id=${filtro}`;
     return this.http.get(url).pipe(
-        map(this.jsonDataToResources.bind(this)), //esse bind diz pro map ql contexto vai ser executado.. no primeiro this .. é o this do map.. o segundo this dentro do bind é this da classe service
-        catchError(this.handleError)
+      map(this.jsonDataToResources.bind(this)), //esse bind diz pro map ql contexto vai ser executado.. no primeiro this .. é o this do map.. o segundo this dentro do bind é this da classe service
+      catchError(this.handleError)
     );
   }
 

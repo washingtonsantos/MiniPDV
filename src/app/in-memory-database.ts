@@ -51,7 +51,7 @@ export class InMemoryDatabase implements InMemoryDbService {
     ]
 
     const pedidoItens: Pedidoitens[] = [
-      { id: 0, idPedido: 0, produto: produtos[0], quantidade: 0, desconto: 0, preco: 0 }
+      { id: 0, idPedido: 0, produto: produtos[0], quantidade: 0, precoUnitario: 0, desconto: 0, valorTotal: 0 }
     ]
 
     return { clientes, vendedores, produtos, pedidoCabeca, pedidoItens };

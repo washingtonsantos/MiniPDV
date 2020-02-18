@@ -1,5 +1,11 @@
 <app-navbar></app-navbar>
 <router-outlet></router-outlet>
+<p-confirmDialog #cd>
+  <p-footer>
+    <button type="button" class="btn btn-danger" (click)="cd.reject()"><i class="fa fa-ban mr-1"></i>NÃO</button>
+    <button type="button" class="btn btn-success" (click)="cd.accept()"><i class="fa fa-check mr-1"></i>SIM</button>
+  </p-footer>
+</p-confirmDialog>
 <footer>
   <p class="mt-5 mb-3 text-muted text-center">&copy; 2020</p>
 </footer>

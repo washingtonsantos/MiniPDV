@@ -8,8 +8,9 @@ export class Pedidoitens extends BaseResourceModel {
     public idPedido?: number,
     public produto?: Produto,
     public quantidade?: number,
+    public precoUnitario?: number,
     public desconto?: number,
-    public preco?: number
+    public valorTotal?: number,
   ) {
     super();
   }

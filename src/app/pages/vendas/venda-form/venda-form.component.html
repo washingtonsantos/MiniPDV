@@ -220,7 +220,10 @@
                 <tr>
                   <th scope="col">Produto</th>
                   <th scope="col">Quantidade</th>
+                  <th scope="col"></th>
                   <th scope="col">Preço</th>
+                  <th scope="col">Desc.</th>
+                  <th scope="col">Total</th>
                   <th></th>
                 </tr>
               </thead>
@@ -228,8 +231,11 @@
                 <tr *ngFor="let item of pedidoItens; index as i;">
                   <td>{{ item.produto?.descricao }}</td>
                   <td>{{ item.quantidade }}</td>
-                  <td *ngIf="item.preco >= 10">{{ item.preco | currency: 'R$' }}</td>
-                  <td *ngIf="item.preco < 10">{{ item.preco | currency: 'R$' }}</td>
+                  <td> x </td>
+                  <td *ngIf="item.precoUnitario >= 10">{{ item.precoUnitario | currency: 'R$' }}</td>
+                  <td *ngIf="item.precoUnitario < 10">{{ item.precoUnitario | currency: 'R$' }}</td>
+                  <td> {{ item.desconto | currency: 'R$' }} </td>
+                  <td> {{ item.valorTotal | currency: 'R$' }} </td>
                   <!-- <td><input type="text" style="width: 50px;" [(ngModel)]="item.quantidade" (ngModelChange)="editPedidoItem(item)" ></td> -->
                   <!-- <td><input type="text" style="width: 100px;" [(ngModel)]="item.preco" ></td> -->
                   <td>
