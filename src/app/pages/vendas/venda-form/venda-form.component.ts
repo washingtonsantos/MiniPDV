@@ -15,7 +15,6 @@ import { VendaService } from '../shared/services/venda.service';
 import { PedidocabecaService } from '../../pedidos/pedidocabeca/shared/services/pedidocabeca.service';
 declare var $: any;
 
-
 @Component({
   selector: 'app-venda-form',
   templateUrl: './venda-form.component.html',
@@ -38,6 +37,7 @@ export class VendaFormComponent implements OnInit {
   valorTotal: number = 0;
   produtoQTD: number;
   produtoPreco: number = 0;
+  ultimoPedido: number = 0;
 
   mdlSampleIsOpen: boolean = false;
 
@@ -62,9 +62,14 @@ export class VendaFormComponent implements OnInit {
   }
 
   ngOnInit() {
+
     this.getClientes();
     this.getVendedores();
     this.getProdutos();
+  }
+
+  getPedidos() {
+
   }
 
   getClientes() {
@@ -160,8 +165,11 @@ export class VendaFormComponent implements OnInit {
 
   gravarPedido(pedidoItens: Pedidoitens[]) {
 
+
+
     if (this.cliente && this.vendedor && pedidoItens) {
-      const pedidoCabeca = Object.assign(new Pedidocabeca(1, this.cliente, this.vendedor, new Date(), 0));
+
+      const pedidoCabeca = Object.assign(new Pedidocabeca(this.ultimoPedido += 1, this.cliente, this.vendedor, new Date(), 0));
       this.pedidocabecaService.create(pedidoCabeca).
         subscribe(
           pedidoCabeca => this.actionsForSuccess(pedidoCabeca),
