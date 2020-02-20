@@ -124,19 +124,19 @@ export class VendaFormComponent implements OnInit {
   }
 
   async removerItem(pedidoItem: Pedidoitens) {
-      this.confirmationService.confirm({
-        message: 'Deseja cancelar o item?',
-        header: 'Confirmação',
-        icon: 'pi pi-exclamation-triangle',
-        acceptLabel: 'SIM',
-        rejectLabel: 'NÃO',
-        accept: () => {
-          if (this.pedidoItens.find(x => x.id === pedidoItem.id)) {
-            this.pedidoItens.splice(this.pedidoItens.findIndex(x => x.id === pedidoItem.id), 1);
-          }
-          this.AtualizaValorTotal();
-        },
-      });
+    this.confirmationService.confirm({
+      message: 'Deseja cancelar o item?',
+      header: 'Confirmação',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'SIM',
+      rejectLabel: 'NÃO',
+      accept: () => {
+        if (this.pedidoItens.find(x => x.id === pedidoItem.id)) {
+          this.pedidoItens.splice(this.pedidoItens.findIndex(x => x.id === pedidoItem.id), 1);
+        }
+        this.AtualizaValorTotal();
+      },
+    });
 
     //let podeRemover = await this.customConfirmationServiceService.excluir(pedidoItem.id);
 
@@ -163,10 +163,10 @@ export class VendaFormComponent implements OnInit {
     if (this.cliente && this.vendedor && pedidoItens) {
       const pedidoCabeca = Object.assign(new Pedidocabeca(1, this.cliente, this.vendedor, new Date(), 0));
       this.pedidocabecaService.create(pedidoCabeca).
-      subscribe(
-        pedidoCabeca => this.actionsForSuccess(pedidoCabeca),
-        error => this.actionsForError(error)
-      );
+        subscribe(
+          pedidoCabeca => this.actionsForSuccess(pedidoCabeca),
+          error => this.actionsForError(error)
+        );
       alert('Pedido Gravado com sucesso');
       this.limparDadosTela();
     }
@@ -182,6 +182,10 @@ export class VendaFormComponent implements OnInit {
 
   alterCliente(cliente: Cliente) {
     this.cliente = cliente;
+  }
+
+  alterVendedor(vendedor: Vendedor) {
+    this.vendedor = vendedor;
   }
 
   customSearchFnCliente(term: string, item: Cliente) {
