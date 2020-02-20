@@ -6,14 +6,15 @@
 </head>
 
 <body>
-  <form class="form-signin">
+  <form [formGroup]="resourceForm" class="form-signin">
+
 
     <div class="text-center mb-4">
-      <img class="mb-4" src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" alt="" width="72" height="72">
       <h1 class="h3 mb-3 font-weight-normal">Relatórios</h1>
     </div>
 
     <div class="container">
+
       <div class="card-deck mb-3 text-center">
         <div class="card mb-4 box-shadow">
           <div class="card-header">
@@ -21,29 +22,45 @@
           </div>
           <div class="card-body">
 
-            <div class="input-group mb-3">
-              <div class="input-group-prepend">
+            <!-- <div class="form-group">
                 <span class="input-group-text" id="basic-addon1">Data Inicio:</span>
+              <input type="date" class="form-control" placeholder="dataInicio"
+                id="dtInicio" name="dtInicio" formControlName="dataInicial" aria-label="dataInicio"
+                aria-describedby="basic-addon1" required>
+                  <div>
+                      Data inicial é obrigatória
+                  </div>
+            </div> -->
+
+
+
+            <div class="row form-group">
+              <label for="dtInicio">Data Inicial</label>
+              <input type="date" class="form-control" formControlName="dataInicial" id="dtInicio"
+               placeholder="Data Inicial" aria-label="dataInicial" aria-describedby="basic-addon1"
+               required
+               >
+               <div style="color: red; font-style: italic" *ngIf=" resourceForm.get('dataInicial').touched && resourceForm.get('dataInicial').invalid">
+                 Data Inicial é obrigatória
+               </div>
+             </div>
+
+             <div class="row form-group">
+              <label>Data Final</label>
+              <input type="date" class="form-control" id="dtFim" formControlName="dataFinal"
+               placeholder="Data Final" aria-label="dataFinal" aria-describedby="basic-addon1">
+               <div style="color: red; font-style: italic" *ngIf=" resourceForm.get('dataInicial').touched && resourceForm.get('dataInicial').invalid">
+                Data Final é obrigatória
               </div>
-              <input type="date" class="form-control" placeholder="dataInicio" aria-label="dataInicio"
-                aria-describedby="basic-addon1">
-
-              <div class="input-group-prepend ml-2">
-                <span class="input-group-text" id="basic-addon1">Data Fim:</span>
               </div>
-              <input type="date" class="form-control" placeholder="dataFim" aria-label="dataFim"
-                aria-describedby="basic-addon1">
 
-            </div>
-
-            <div class="input-group mb-3">
+            <!-- <div class="input-group mb-3">
 
               <div class="input-group-prepend">
                 <span class="input-group-text" id="basic-addon1">Cliente</span>
               </div>
               <input type="text" class="form-control" placeholder="cliente" aria-label="cliente"
-                aria-describedby="basic-addon1">
-
+                aria-describedby="basic-addon1" formControlName="cliente"/>
             </div>
 
             <div class="input-group mb-3">
@@ -54,53 +71,14 @@
               <input type="text" class="form-control" placeholder="vendedor" aria-label="vendedor"
                 aria-describedby="basic-addon1">
 
-            </div>
+            </div> -->
 
-
-            <button type="button" class="btn btn-lg btn-block btn-outline-primary"
+            <button type="button" [disabled]="resourceForm.invalid"
+             class="btn btn-lg btn-block btn-primary"
               (click)="gerarRelatorio()">Gerar</button>
           </div>
         </div>
       </div>
-
-      <!-- <footer class="pt-4 my-md-5 pt-md-5 border-top">
-        <div class="row">
-          <div class="col-12 col-md">
-            <img class="mb-2" src="https://getbootstrap.com/assets/brand/bootstrap-solid.svg" alt="" width="24"
-              height="24">
-            <small class="d-block mb-3 text-muted">&copy; 2017-2018</small>
-          </div>
-          <div class="col-6 col-md">
-            <h5>Features</h5>
-            <ul class="list-unstyled text-small">
-              <li><a class="text-muted" href="#">Cool stuff</a></li>
-              <li><a class="text-muted" href="#">Random feature</a></li>
-              <li><a class="text-muted" href="#">Team feature</a></li>
-              <li><a class="text-muted" href="#">Stuff for developers</a></li>
-              <li><a class="text-muted" href="#">Another one</a></li>
-              <li><a class="text-muted" href="#">Last time</a></li>
-            </ul>
-          </div>
-          <div class="col-6 col-md">
-            <h5>Resources</h5>
-            <ul class="list-unstyled text-small">
-              <li><a class="text-muted" href="#">Resource</a></li>
-              <li><a class="text-muted" href="#">Resource name</a></li>
-              <li><a class="text-muted" href="#">Another resource</a></li>
-              <li><a class="text-muted" href="#">Final resource</a></li>
-            </ul>
-          </div>
-          <div class="col-6 col-md">
-            <h5>About</h5>
-            <ul class="list-unstyled text-small">
-              <li><a class="text-muted" href="#">Team</a></li>
-              <li><a class="text-muted" href="#">Locations</a></li>
-              <li><a class="text-muted" href="#">Privacy</a></li>
-              <li><a class="text-muted" href="#">Terms</a></li>
-            </ul>
-          </div>
-        </div>
-      </footer> -->
 
     </div>
 

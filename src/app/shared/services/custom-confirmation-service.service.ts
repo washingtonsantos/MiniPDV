@@ -2,16 +2,18 @@ import { Injectable } from '@angular/core';
 import { ConfirmationService } from 'primeng/api';
 
 import { BaseResourceService } from './base-resource.service';
+import { BaseResourceModel } from '../models/base-resource.model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CustomConfirmationServiceService<T> {
-
+export class CustomConfirmationServiceService<T extends BaseResourceModel> {
+resource: T[] = [];
   constructor(protected confirmationService: ConfirmationService,
+    protected resourceService: BaseResourceService<T>
   ) { }
 
-  async excluir(id: number): Promise<Boolean> {
+  excluir(id: number): void {
 
     this.confirmationService.confirm({
       message: 'Deseja cancelar o item?',
@@ -21,6 +23,7 @@ export class CustomConfirmationServiceService<T> {
       rejectLabel: 'NÃO',
 
       accept: () => {
+        this.resourceService.delete(id);
         return true;
       },
     });

@@ -42,6 +42,13 @@ export abstract class BaseResourceService<T extends BaseResourceModel> {
     );
   }
 
+  create(resource: T): Observable<T> {
+    return this.http.post(this.apiPath, resource).pipe(
+      map(this.jsonDataToResource.bind(this)),
+      catchError(this.handleError)
+    )
+  }
+
   // PROTECTED METHODS
   protected jsonDataToResources(jsonData: any[]): T[] {
     const resources: T[] = [];

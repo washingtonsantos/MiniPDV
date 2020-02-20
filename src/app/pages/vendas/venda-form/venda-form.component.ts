@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
-declare var $: any;
 
 import { Produto } from '../../produtos/shared/models/produto.model';
 import { ProdutoService } from '../../produtos/shared/services/produto.service';
@@ -11,8 +10,11 @@ import { VendedorService } from '../../vendedores/shared/services/vendedor.servi
 import { PedidoitensService } from '../../pedidos/pedidoitens/shared/services/pedidoitens.service';
 import { Pedidocabeca } from '../../pedidos/pedidocabeca/shared/models/pedidocabeca';
 import { NgSelectConfig } from '@ng-select/ng-select';
-import { CustomConfirmationServiceService } from 'src/app/shared/services/custom-confirmation-service.service';
-import { async } from 'rxjs/internal/scheduler/async';
+import { ConfirmationService } from 'primeng/api';
+import { VendaService } from '../shared/services/venda.service';
+import { PedidocabecaService } from '../../pedidos/pedidocabeca/shared/services/pedidocabeca.service';
+declare var $: any;
+
 
 @Component({
   selector: 'app-venda-form',
@@ -48,12 +50,14 @@ export class VendaFormComponent implements OnInit {
   }
 
   constructor(
+    private vendaService: VendaService,
     private produtoService: ProdutoService,
     private clienteService: ClienteService,
     private vendedorService: VendedorService,
     private pedidoItensService: PedidoitensService,
+    private pedidocabecaService: PedidocabecaService,
     private config: NgSelectConfig,
-    private customConfirmationServiceService: CustomConfirmationServiceService<Pedidocabeca>) {
+    protected confirmationService: ConfirmationService) {
     this.config.notFoundText = 'Item não encontrado';
   }
 
@@ -120,8 +124,21 @@ export class VendaFormComponent implements OnInit {
   }
 
   async removerItem(pedidoItem: Pedidoitens) {
+      this.confirmationService.confirm({
+        message: 'Deseja cancelar o item?',
+        header: 'Confirmação',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'SIM',
+        rejectLabel: 'NÃO',
+        accept: () => {
+          if (this.pedidoItens.find(x => x.id === pedidoItem.id)) {
+            this.pedidoItens.splice(this.pedidoItens.findIndex(x => x.id === pedidoItem.id), 1);
+          }
+          this.AtualizaValorTotal();
+        },
+      });
 
-    let podeRemover = await this.customConfirmationServiceService.excluir(pedidoItem.id);
+    //let podeRemover = await this.customConfirmationServiceService.excluir(pedidoItem.id);
 
     // if (podeRemover) {
     //   let item = this.pedidoItens.find((f) => f.id === pedidoItem.id);
@@ -135,10 +152,6 @@ export class VendaFormComponent implements OnInit {
     // else {
     //   item.precoUnitario = 0;
     //   item.quantidade = 0;
-    if (this.pedidoItens.find(x => x.id === pedidoItem.id && podeRemover)) {
-      this.pedidoItens.splice(this.pedidoItens.findIndex(x => x.id === pedidoItem.id), 1);
-    }
-    this.AtualizaValorTotal();
   }
 
   AtualizaValorTotal() {
@@ -146,11 +159,25 @@ export class VendaFormComponent implements OnInit {
   }
 
   gravarPedido(pedidoItens: Pedidoitens[]) {
+
     if (this.cliente && this.vendedor && pedidoItens) {
-      new Pedidocabeca(0, this.cliente, this.vendedor, new Date(), 0);
+      const pedidoCabeca = Object.assign(new Pedidocabeca(1, this.cliente, this.vendedor, new Date(), 0));
+      this.pedidocabecaService.create(pedidoCabeca).
+      subscribe(
+        pedidoCabeca => this.actionsForSuccess(pedidoCabeca),
+        error => this.actionsForError(error)
+      );
       alert('Pedido Gravado com sucesso');
       this.limparDadosTela();
     }
+  }
+
+  private actionsForSuccess(venda: Pedidocabeca) {
+    console.log("Sucesso")
+  }
+
+  private actionsForError(venda: any) {
+    console.log("Ocorreu um erro")
   }
 
   alterCliente(cliente: Cliente) {

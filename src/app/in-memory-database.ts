@@ -46,14 +46,17 @@ export class InMemoryDatabase implements InMemoryDbService {
       { id: 10, descricao: 'Carne Bovina Picanha', unidade: 'KG', estoque: 5, preco: 39.50 },
     ]
 
-    const pedidoCabeca: Pedidocabeca[] = [
-      { id: 0, cliente: null, vendedor: null, data: new Date(2020, 2, 15, 21, 0, 0), total: 0 }
+    const pedidocabeca: Pedidocabeca[] = [
+      { id: 1, cliente: clientes[1], vendedor: null, data: new Date(2020, 1, 19), total: 1148 },
+      { id: 2, cliente: clientes[2], vendedor: null, data: new Date(2020, 1, 20), total: 2000 },
+      { id: 3, cliente: clientes[3], vendedor: null, data: new Date(2020, 1, 21), total: 199 },
+      { id: 4, cliente: clientes[4], vendedor: null, data: new Date(2020, 1, 22), total: 20.5 },
     ]
 
-    const pedidoItens: Pedidoitens[] = [
+    const pedidoitens: Pedidoitens[] = [
       { id: 0, idPedido: 0, produto: produtos[0], quantidade: 0, precoUnitario: 0, desconto: 0, valorTotal: 0 }
     ]
 
-    return { clientes, vendedores, produtos, pedidoCabeca, pedidoItens };
+    return { clientes, vendedores, produtos, pedidocabeca, pedidoitens };
   }
 }
