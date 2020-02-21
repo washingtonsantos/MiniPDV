@@ -1,6 +1,7 @@
 import { Pedidocabeca } from './../../../pedidos/pedidocabeca/shared/models/pedidocabeca';
 import { Injectable } from '@angular/core';
 import * as jsPDF from 'jspdf';
+import { timer } from 'rxjs';
 
 import { PedidocabecaService } from 'src/app/pages/pedidos/pedidocabeca/shared/services/pedidocabeca.service';
 
@@ -13,7 +14,7 @@ export class RelatorioService {
 
   pedidocabeca: Pedidocabeca[] = [];
 
-  gerarPDF() {
+  async gerarPDF() {
 
     this.pedidocabecaService.getAll().subscribe(s => {
       this.pedidocabeca = s;
@@ -21,6 +22,7 @@ export class RelatorioService {
       let linha = 33;
       let documento = new jsPDF();
       let total = 0;
+      let numPag = 0;
 
       this.pedidocabeca.forEach(pedido => {
 
@@ -65,9 +67,22 @@ export class RelatorioService {
           documento.text(pedido.vendedor.nome, 125, linha);
           total += pedido.total;
           documento.text(String(pedido.total), 185, linha);
-
-          linha += 8;
         }
+
+        if (linha == 257) {
+          function sleep(time) {
+            return new Promise((resolve) => {
+              setTimeout(resolve, time || 1000);
+            });
+          }
+          numPag += 1;
+          documento.text("pág. " + numPag, 185, linha + 16);
+          documento.output("dataurlnewwindow");
+          documento = new jsPDF();
+          linha = 33;
+        }
+        else
+          linha += 8;
       });
 
       documento.setFont("Courier");
@@ -75,9 +90,11 @@ export class RelatorioService {
       documento.text("Total Acumulado: R$ ", 120, linha);
       documento.text(String(total), 180, linha);
       linha = 290;
-      documento.text("pág. 1", 185, linha);
+      documento.text("pág. " + numPag, 185, linha);
       documento.output("dataurlnewwindow");
 
-    });
+    });    //end loop for
   }
+
+
 }

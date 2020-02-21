@@ -168,8 +168,7 @@ export class VendaFormComponent implements OnInit {
 
 
     if (this.cliente && this.vendedor && pedidoItens) {
-
-      const pedidoCabeca = Object.assign(new Pedidocabeca(this.ultimoPedido += 1, this.cliente, this.vendedor, new Date(), 0));
+      const pedidoCabeca = Object.assign(new Pedidocabeca(this.ultimoPedido += 1, this.cliente, this.vendedor, new Date(), this.valorTotal));
       this.pedidocabecaService.create(pedidoCabeca).
         subscribe(
           pedidoCabeca => this.actionsForSuccess(pedidoCabeca),
