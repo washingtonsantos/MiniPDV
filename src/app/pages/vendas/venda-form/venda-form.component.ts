@@ -38,6 +38,7 @@ export class VendaFormComponent implements OnInit {
   produtoQTD: number;
   produtoPreco: number = 0;
   ultimoPedido: number = 0;
+  descontoUnt: number = 0;
 
   mdlSampleIsOpen: boolean = false;
 
@@ -97,7 +98,7 @@ export class VendaFormComponent implements OnInit {
   addProduto(produto: Produto) {
 
     produto = this.produto;
-    let desconto = this.produtoQTD * produto.preco - this.produtoPreco;
+    let desconto = (produto.preco - Number(this.produtoPreco));
     // let pedido = this.pedidoItens.length > 0 ? this.pedidoItens.find((existe) => existe.produto.id === produto.id) : null;
 
     // if (this.pedidoItens.length > 0 && (pedido !== undefined || pedido != null ))  {
@@ -160,7 +161,7 @@ export class VendaFormComponent implements OnInit {
   }
 
   AtualizaValorTotal() {
-    this.valorTotal = this.pedidoItens.reduce((sum, current) => sum + (current.precoUnitario * current.quantidade) - current.desconto, 0);
+    this.valorTotal = this.pedidoItens.reduce((sum, current) => sum + (current.precoUnitario * current.quantidade) - (current.desconto * current.quantidade), 0);
   }
 
   gravarPedido(pedidoItens: Pedidoitens[]) {
@@ -254,7 +255,7 @@ export class VendaFormComponent implements OnInit {
     }
     else {
       this.produto = this.produtos.find(it => it.id === Number(this.searchText));
-      this.produtoPreco = this.produto.preco * this.produtoQTD;
+      this.produtoPreco = this.produto.preco;
     }
   }
 

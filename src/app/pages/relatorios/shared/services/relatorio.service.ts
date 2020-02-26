@@ -14,7 +14,14 @@ export class RelatorioService {
 
   pedidocabeca: Pedidocabeca[] = [];
 
+
+
   async gerarPDF() {
+
+    // var formatter = new Intl.NumberFormat('pt-BR', {
+    //   style: 'currency',
+    //   currency: 'R$',
+    // });
 
     this.pedidocabecaService.getAll().subscribe(s => {
       this.pedidocabeca = s;
@@ -59,14 +66,17 @@ export class RelatorioService {
             // hour: '2-digit',
             // minute: '2-digit',
             // second: '2-digit'
-          }).replace(/\//g, '-')
+          })
 
           documento.text(dateString, 12, linha);
           documento.text(String(pedido.id), 42, linha);
           documento.text(pedido.cliente.nome, 62, linha);
           documento.text(pedido.vendedor.nome, 125, linha);
           total += pedido.total;
-          documento.text(String(pedido.total), 185, linha);
+
+
+
+          documento.text(String(pedido.total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })), 180, linha);
         }
 
         if (linha == 257) {
@@ -87,9 +97,13 @@ export class RelatorioService {
 
       documento.setFont("Courier");
       documento.setFontStyle("bold");
-      documento.text("Total Acumulado: R$ ", 120, linha);
-      documento.text(String(total), 180, linha);
+      documento.text("Total Acumulado:", 120, linha);
+      documento.text(total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' }), 180, linha);
       linha = 290;
+
+      if (numPag === 0)
+        numPag = 1;
+
       documento.text("pág. " + numPag, 185, linha);
       documento.output("dataurlnewwindow");
 

@@ -47,10 +47,10 @@ export class InMemoryDatabase implements InMemoryDbService {
     ]
 
     const pedidocabeca: Pedidocabeca[] = [
-      // { id: 1, cliente: clientes[1], vendedor: vendedores[1], data: new Date(2020, 1, 19), total: 1148 },
-      // { id: 2, cliente: clientes[2], vendedor: vendedores[1], data: new Date(2020, 1, 20), total: 2000 },
-      // { id: 3, cliente: clientes[3], vendedor: vendedores[2], data: new Date(2020, 1, 21), total: 199 },
-      // { id: 4, cliente: clientes[4], vendedor: vendedores[3], data: new Date(2020, 1, 22), total: 20.5 },
+      { id: 1, cliente: clientes[1], vendedor: vendedores[1], data: new Date(2020, 1, 19), total: 1148 },
+      { id: 2, cliente: clientes[2], vendedor: vendedores[1], data: new Date(2020, 1, 20), total: 2000 },
+      { id: 3, cliente: clientes[3], vendedor: vendedores[2], data: new Date(2020, 1, 21), total: 199 },
+      { id: 4, cliente: clientes[4], vendedor: vendedores[3], data: new Date(2020, 1, 22), total: 20.5 },
     ]
 
     const pedidoitens: Pedidoitens[] = [
