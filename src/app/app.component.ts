@@ -7,4 +7,10 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'miniPDV';
+  ano: number;
+
+  constructor() {
+    this.ano = new Date().getFullYear();
+  }
+
 }

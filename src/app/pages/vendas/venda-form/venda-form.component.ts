@@ -160,7 +160,7 @@ export class VendaFormComponent implements OnInit {
   }
 
   AtualizaValorTotal() {
-    this.valorTotal = this.pedidoItens.reduce((sum, current) => sum + current.precoUnitario, 0);
+    this.valorTotal = this.pedidoItens.reduce((sum, current) => sum + (current.precoUnitario * current.quantidade) - current.desconto, 0);
   }
 
   gravarPedido(pedidoItens: Pedidoitens[]) {
