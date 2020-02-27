@@ -19,19 +19,6 @@
 
       <div class=" mb-3 text-center">
         <div class="mb-4 box-shadow">
-          <!-- <div class="card-header">
-
-          </div> -->
-
-          <!-- <div class="form-group">
-                <span class="input-group-text" id="basic-addon1">Data Inicio:</span>
-              <input type="date" class="form-control" placeholder="dataInicio"
-                id="dtInicio" name="dtInicio" formControlName="dataInicial" aria-label="dataInicio"
-                aria-describedby="basic-addon1" required>
-                  <div>
-                      Data inicial é obrigatória
-                  </div>
-            </div> -->
 
           <div class="row form-group">
             <label for="dtInicio">Data Inicial</label>
@@ -53,33 +40,17 @@
             </div>
           </div>
 
-          <!-- <div class="input-group mb-3">
-
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="basic-addon1">Cliente</span>
-              </div>
-              <input type="text" class="form-control" placeholder="cliente" aria-label="cliente"
-                aria-describedby="basic-addon1" formControlName="cliente"/>
-            </div>
-
-            <div class="input-group mb-3">
-
-              <div class="input-group-prepend">
-                <span class="input-group-text" id="basic-addon1">Vendedor</span>
-              </div>
-              <input type="text" class="form-control" placeholder="vendedor" aria-label="vendedor"
-                aria-describedby="basic-addon1">
-
-            </div> -->
-
-
-
-
+          <div class="row form-group">
+            <label for="slcVendedor">Filtrar por Vendedor</label>
+            <select class="form-control" id="slcVendedor" formControlName="vendedor" value="vendedor">
+              <option>Todos</option>
+              <option *ngFor=" let vendedor of vendedores">{{ vendedor.nome }}</option>
+            </select>
+          </div>
         </div>
       </div>
-
-      <button type="button" [disabled]="resourceForm.invalid" class="btn btn-primary btn-lg btn-block"
-        (click)="gerarRelatorio()">Gerar</button>
+      <button type="button" [disabled]="resourceForm.invalid" class="row btn btn-primary btn-lg btn-block"
+        (click)="gerarRelatorioVendas()">Gerar</button>
 
     </form>
   </div>
