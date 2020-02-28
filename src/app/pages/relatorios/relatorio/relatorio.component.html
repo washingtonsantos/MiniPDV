@@ -42,15 +42,15 @@
 
           <div class="row form-group">
             <label for="slcVendedor">Filtrar por Vendedor</label>
-            <select class="form-control" id="slcVendedor" formControlName="vendedor" value="vendedor">
+            <select class="form-control" id="slcVendedor" formControlName="vendedor">
               <option>Todos</option>
-              <option *ngFor=" let vendedor of vendedores">{{ vendedor.nome }}</option>
+              <option *ngFor=" let vendedor of vendedores" [value]="vendedor.id">{{ vendedor.nome }}</option>
             </select>
           </div>
         </div>
       </div>
       <button type="button" [disabled]="resourceForm.invalid" class="row btn btn-primary btn-lg btn-block"
-        (click)="gerarRelatorioVendas()">Gerar</button>
+        (click)="gerarRelatorio()">Gerar</button>
 
     </form>
   </div>

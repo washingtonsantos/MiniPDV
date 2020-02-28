@@ -17,7 +17,7 @@ export class RelatorioComponent implements OnInit {
   cliente: Cliente = null;
   resourceForm: FormGroup;
   vendedores: Vendedor[] = [];
-  vendedor: Vendedor = null;
+  vendedor: Vendedor;
   customSearchFnCliente: string;
 
   constructor(
@@ -34,26 +34,23 @@ export class RelatorioComponent implements OnInit {
     this.resourceForm = this.fb.group({
       dataInicial: ['', [Validators.required]],
       dataFinal: ['', [Validators.required]],
-      vendedor: [this.vendedor]
+      vendedor: [null]
     });
   }
 
-  async gerarRelatorio() {
-    return await this.relatorioService.gerarPDF(this.resourceForm.get('vendedor').value);
+  gerarRelatorio() {
+    const idVendedor = this.resourceForm.get('vendedor').value;
+    const gerou = this.relatorioService.gerarPDF(idVendedor);
+
+    if (!gerou) {
+      alert('Não foi encontrado nenhuma Venda!');
+    }
   }
 
   getVendedores() {
     this.vendedorService.getAll().subscribe(vend => {
-      vend = this.vendedores = vend
+      vend = this.vendedores = vend;
     });
-  }
-
-  async gerarRelatorioVendas() {
-    let gerou = this.gerarRelatorio();
-
-    if (gerou) {
-      alert('Nenhum registro encontrado!')
-    }
   }
 
 }

@@ -22,7 +22,7 @@ export abstract class BaseResourceService<T extends BaseResourceModel> {
     return this.http.get(this.apiPath).pipe(
       map(this.jsonDataToResources.bind(this)),
       catchError(this.handleError)
-    )
+    );
   }
 
   getById(codigo: number): Observable<T> {
@@ -31,7 +31,7 @@ export abstract class BaseResourceService<T extends BaseResourceModel> {
     return this.http.get(url).pipe(
       map(this.jsonDataToResource.bind(this)),
       catchError(this.handleError),
-    )
+    );
   }
 
   delete(id: number): Observable<any> {
@@ -46,7 +46,7 @@ export abstract class BaseResourceService<T extends BaseResourceModel> {
     return this.http.post(this.apiPath, resource).pipe(
       map(this.jsonDataToResource.bind(this)),
       catchError(this.handleError)
-    )
+    );
   }
 
   // PROTECTED METHODS
