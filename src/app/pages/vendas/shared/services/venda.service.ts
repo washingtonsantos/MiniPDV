@@ -1,21 +1,17 @@
 import { Injectable, Injector } from '@angular/core';
 
 import { BaseResourceService } from 'src/app/shared/services/base-resource.service';
-import { Pedidoitens } from 'src/app/pages/pedidos/pedidoitens/shared/models/pedidoitens';
 import { Pedidocabeca } from 'src/app/pages/pedidos/pedidocabeca/shared/models/pedidocabeca';
 import { PedidocabecaService } from 'src/app/pages/pedidos/pedidocabeca/shared/services/pedidocabeca.service';
-import { Observable, throwError } from 'rxjs';
-import { map } from 'rxjs/internal/operators/map';
-import { catchError } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class VendaService extends BaseResourceService<Pedidocabeca> {
 
-    constructor(protected injector: Injector, private pedidocabecaService: PedidocabecaService) {
-      super('api/pedidocabeca', injector, Pedidocabeca.fromJson)
-    }
+  constructor(protected injector: Injector, private pedidocabecaService: PedidocabecaService) {
+    super('api/pedidocabeca', injector, Pedidocabeca.fromJson)
+  }
 
   //   gravarPedido(resource: Pedidocabeca): Observable<Pedidocabeca> {
   //     return this.http.post(this.apiPath, resource).pipe(

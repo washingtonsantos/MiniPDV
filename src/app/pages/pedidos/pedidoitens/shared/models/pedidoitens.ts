@@ -1,5 +1,4 @@
 import { BaseResourceModel } from 'src/app/shared/models/base-resource.model';
-
 import { Produto } from 'src/app/pages/produtos/shared/models/produto.model';
 
 export class Pedidoitens extends BaseResourceModel {

@@ -1,6 +1,5 @@
 import { Injectable, OnInit } from '@angular/core';
 import * as jsPDF from 'jspdf';
-import { timer } from 'rxjs';
 
 import { Vendedor } from 'src/app/pages/vendedores/shared/models/vendedor';
 import { Pedidocabeca } from './../../../pedidos/pedidocabeca/shared/models/pedidocabeca';
@@ -16,21 +15,30 @@ export class RelatorioService {
 
   constructor(
     private pedidocabecaService: PedidocabecaService,
-    private vendedorService: VendedorService) {
-      this.getPedidosCabecas();
-    }
+  ) { }
 
   getPedidosCabecas() {
-    this.pedidocabecaService.getAll().subscribe((response) => {
-      this.pedidocabeca = response;
-   });
+    this.pedidocabecaService.getAll()
+      .subscribe((response) => {
+        this.pedidocabeca = response;
+      });
   }
 
-  gerarPDF(idVendedor: number): boolean {
+  gerarRelatorio(idVendedor: number, dtInicio: Date, dtFim: Date): boolean {
 
     if (idVendedor > 0) {
-      this.pedidocabeca = this.pedidocabeca.filter((f) => f.vendedor.id === Number(idVendedor));
+      this.pedidocabeca = this.pedidocabeca.filter((f) => f.vendedor.id === Number(idVendedor) && (f.data >= dtInicio && f.data <= dtFim));
     }
+
+    this.pedidocabecaService.getAll()
+      .subscribe((response) => {
+        this.pedidocabeca = response;
+      });
+
+    return this.gerarPDF();
+  }
+
+  gerarPDF(): boolean {
 
     let linha = 33;
     const documento = new jsPDF();
@@ -43,26 +51,26 @@ export class RelatorioService {
 
     this.pedidocabeca.forEach(pedido => {
 
-    if (pedido.cliente && pedido.vendedor) {
-       this.addLinhaTable(documento, linha, false);
-       const dateObj = new Date(pedido.data);
-       const dateString = dateObj.toLocaleString('pt', {
+      if (pedido.cliente && pedido.vendedor) {
+        this.addLinhaTable(documento, linha, false);
+        const dateObj = new Date(pedido.data);
+        const dateString = dateObj.toLocaleString('pt', {
           year: 'numeric',
           month: '2-digit',
           day: '2-digit'
         });
-       documento.setFontStyle('normal');
-       documento.setTextColor(0, 0, 0);
-       documento.text(dateString, 12, linha);
-       documento.text(String(pedido.id), 42, linha);
-       documento.text(pedido.cliente.nome, 62, linha);
-       documento.text(pedido.vendedor.nome, 122, linha);
-       total += pedido.total;
-       documento.text(String(pedido.total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })), 177, linha);
-       linha += 8;
+        documento.setFontStyle('normal');
+        documento.setTextColor(0, 0, 0);
+        documento.text(dateString, 12, linha);
+        documento.text(String(pedido.id), 42, linha);
+        documento.text(pedido.cliente.nome, 62, linha);
+        documento.text(pedido.vendedor.nome, 122, linha);
+        total += pedido.total;
+        documento.text(String(pedido.total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })), 177, linha);
+        linha += 8;
       }
 
-    if (linha === 257) {
+      if (linha === 257) {
         this.aguardarGerarPaginaNova();
         numPag += 1;
         this.finalizaPagina(documento, numPag, linha + 16);

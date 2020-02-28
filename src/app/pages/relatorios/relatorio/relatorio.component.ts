@@ -39,8 +39,10 @@ export class RelatorioComponent implements OnInit {
   }
 
   gerarRelatorio() {
+    const dtInicial = this.resourceForm.get('dataInicial').value;
+    const dtFinal = this.resourceForm.get('dataFinal').value;
     const idVendedor = this.resourceForm.get('vendedor').value;
-    const gerou = this.relatorioService.gerarPDF(idVendedor);
+    const gerou = this.relatorioService.gerarRelatorio(idVendedor, dtInicial, dtFinal);
 
     if (!gerou) {
       alert('Não foi encontrado nenhuma Venda!');

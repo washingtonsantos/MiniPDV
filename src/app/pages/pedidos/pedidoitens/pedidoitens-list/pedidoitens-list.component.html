@@ -1,29 +1,28 @@
+<table class="table" *ngIf="pedidoItens.length > 0">
+  <thead class="thead-dark">
+    <tr>
+      <th scope="col">Produto</th>
+      <th scope="col">Quantidade</th>
+      <th scope="col">Preço</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let pedido of pedidoItens; index as i;">
+      <td>{{ pedido.produto?.descricao }}</td>
+      <td>{{ pedido.quantidade }}</td>
+      <td style="width: 100px;"> {{ pedido.produto?.preco | currency:'R$' }}</td>
+      <td><button class="btn btn-success">-</button></td>
+    </tr>
+    <tr>
 
-   <table class="table" *ngIf="pedidoItens.length > 0">
-     <thead class="thead-dark">
-       <tr>
-         <th scope="col">Produto</th>
-         <th scope="col">Quantidade</th>
-         <th scope="col">Preço</th>
-         <th></th>
-       </tr>
-     </thead>
-     <tbody>
-       <tr *ngFor="let pedido of pedidoItens; index as i;">
-         <td>{{ pedido.produto?.descricao }}</td>
-         <td>{{ pedido.quantidade }}</td>
-         <td style="width: 100px;"> {{ pedido?.preco | currency:'R$' }}</td>
-         <td><button class="btn btn-success">-</button></td>
-       </tr>
-       <tr>
-
-         <div>
-           <pre>
+      <div>
+        <pre>
              {{ pedidoItens | json }}
            </pre>
-         </div>
-     </tbody>
-   </table>
-   <div *ngIf="pedidoItens.length === 0">
-     Nenhum produto Adicionado
-   </div>
+      </div>
+  </tbody>
+</table>
+<div *ngIf="pedidoItens.length === 0">
+  Nenhum produto Adicionado
+</div>

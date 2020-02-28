@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 
 import { Produto } from '../../produtos/shared/models/produto.model';
 import { ProdutoService } from '../../produtos/shared/services/produto.service';
