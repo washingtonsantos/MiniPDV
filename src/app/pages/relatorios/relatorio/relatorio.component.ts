@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import * as moment from 'moment';
 
 import { Cliente } from '../../clientes/shared/models/cliente';
 import { RelatorioService } from '../shared/services/relatorio.service';
@@ -39,14 +40,10 @@ export class RelatorioComponent implements OnInit {
   }
 
   gerarRelatorio() {
-    const dtInicial = this.resourceForm.get('dataInicial').value;
-    const dtFinal = this.resourceForm.get('dataFinal').value;
+    const dtInicial = moment(this.resourceForm.get('dataInicial').value, 'YYYY-MM-DD').toDate();
+    const dtFinal = moment(this.resourceForm.get('dataFinal').value, 'YYYY-MM-DD').toDate();
     const idVendedor = this.resourceForm.get('vendedor').value;
-    const gerou = this.relatorioService.gerarRelatorio(idVendedor, dtInicial, dtFinal);
-
-    if (!gerou) {
-      alert('Não foi encontrado nenhuma Venda!');
-    }
+    this.relatorioService.gerarRelatorio(idVendedor, dtInicial, dtFinal);
   }
 
   getVendedores() {

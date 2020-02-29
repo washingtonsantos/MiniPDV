@@ -1,41 +1,48 @@
 import { Injectable, OnInit } from '@angular/core';
 import * as jsPDF from 'jspdf';
+import * as moment from 'moment';
 
 import { Vendedor } from 'src/app/pages/vendedores/shared/models/vendedor';
 import { Pedidocabeca } from './../../../pedidos/pedidocabeca/shared/models/pedidocabeca';
 import { PedidocabecaService } from 'src/app/pages/pedidos/pedidocabeca/shared/services/pedidocabeca.service';
 import { VendedorService } from 'src/app/pages/vendedores/shared/services/vendedor.service';
+import { map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RelatorioService {
 
-  pedidocabeca: Pedidocabeca[] = [];
+  pedidos: Pedidocabeca[];
+  pedidos$: Observable<Pedidocabeca[]>;
 
   constructor(
     private pedidocabecaService: PedidocabecaService,
   ) { }
 
-  getPedidosCabecas() {
-    this.pedidocabecaService.getAll()
-      .subscribe((response) => {
-        this.pedidocabeca = response;
+  gerarRelatorio(vendedorId: number, dtInicio: Date, dtFim: Date) {
+
+    const idVendedor = vendedorId;
+    moment.locale('pt-BR');
+
+    if (idVendedor === null || String(idVendedor) === 'Todos') {
+      this.pedidocabecaService.getAll().subscribe(response => {
+        if (response) {
+           this.pedidos = response;
+           this.gerarPDF();
+        }
       });
-  }
-
-  gerarRelatorio(idVendedor: number, dtInicio: Date, dtFim: Date): boolean {
-
-    if (idVendedor > 0) {
-      this.pedidocabeca = this.pedidocabeca.filter((f) => f.vendedor.id === Number(idVendedor) && (f.data >= dtInicio && f.data <= dtFim));
+    } else if (idVendedor >= 1) {
+      this.pedidocabecaService.getAll().subscribe(response => {
+        if (response) {
+           this.pedidos = response.filter((f) => f.vendedor.id === Number(idVendedor)
+           && (moment.utc(f.data, 'YYYY-MM-DD', 'pt').toDate() >= moment(dtInicio, 'YYYY-MM-DD', 'pt').toDate()
+           &&  moment.utc(f.data, 'YYYY-MM-DD', 'pt').toDate() <= moment(dtFim, 'YYYY-MM-DD', 'pt').toDate()));
+           this.gerarPDF();
+        }
+      });
     }
-
-    this.pedidocabecaService.getAll()
-      .subscribe((response) => {
-        this.pedidocabeca = response;
-      });
-
-    return this.gerarPDF();
   }
 
   gerarPDF(): boolean {
@@ -45,11 +52,14 @@ export class RelatorioService {
     let total = 0;
     let numPag = 0;
 
-    if (this.pedidocabeca.length === 0) { return false; }
+    if (this.pedidos.length === 0) {
+      alert('Não foi encontrado nenhuma Venda!');
+      return false;
+     }
 
     this.montaCabecalho(documento);
 
-    this.pedidocabeca.forEach(pedido => {
+    this.pedidos.forEach(pedido => {
 
       if (pedido.cliente && pedido.vendedor) {
         this.addLinhaTable(documento, linha, false);
