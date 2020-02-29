@@ -29,7 +29,9 @@ export class RelatorioService {
     if (idVendedor === null || String(idVendedor) === 'Todos') {
       this.pedidocabecaService.getAll().subscribe(response => {
         if (response) {
-           this.pedidos = response;
+           this.pedidos = response.filter((f) =>
+            (moment.utc(f.data, 'YYYY-MM-DD', 'pt').toDate() >= moment(dtInicio, 'YYYY-MM-DD', 'pt').toDate()
+           &&  moment.utc(f.data, 'YYYY-MM-DD', 'pt').toDate() <= moment(dtFim, 'YYYY-MM-DD', 'pt').toDate()));
            this.gerarPDF();
         }
       });
