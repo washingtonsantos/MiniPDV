@@ -11,10 +11,9 @@ import { VendedorService } from '../../vendedores/shared/services/vendedor.servi
 import { PedidoitensService } from '../../pedidos/pedidoitens/shared/services/pedidoitens.service';
 import { Pedidocabeca } from '../../pedidos/pedidocabeca/shared/models/pedidocabeca';
 import { NgSelectConfig } from '@ng-select/ng-select';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { VendaService } from '../shared/services/venda.service';
 import { PedidocabecaService } from '../../pedidos/pedidocabeca/shared/services/pedidocabeca.service';
-import { last } from 'rxjs/operators';
 declare var $: any;
 
 @Component({
@@ -60,7 +59,8 @@ export class VendaFormComponent implements OnInit {
     private pedidoItensService: PedidoitensService,
     private pedidocabecaService: PedidocabecaService,
     private config: NgSelectConfig,
-    protected confirmationService: ConfirmationService) {
+    protected confirmationService: ConfirmationService,
+    private messageService: MessageService) {
     this.config.notFoundText = 'Item não encontrado';
   }
 
@@ -130,6 +130,7 @@ export class VendaFormComponent implements OnInit {
       accept: () => {
         if (this.pedidoItens.find(x => x.id === pedidoItem.id)) {
           this.pedidoItens.splice(this.pedidoItens.findIndex(x => x.id === pedidoItem.id), 1);
+          this.messageService.add({severity: 'success', summary: 'Item removido com sucesso'});
         }
         this.AtualizaValorTotal();
       },
@@ -167,7 +168,8 @@ export class VendaFormComponent implements OnInit {
               // tslint:disable-next-line: no-unused-expression
               error => this.actionsForError(error);
             });
-          alert('Pedido Gravado com sucesso');
+          this.messageService.add({severity: 'success', summary: 'Pedido Realizado com sucesso'});
+          // alert('Pedido Gravado com sucesso');
           this.limparDadosTela();
         }
 

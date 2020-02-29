@@ -11,6 +11,7 @@ import { MessageModule } from 'primeng/message';
 import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
 import { InMemoryDatabase } from './in-memory-database';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { Toast } from 'primeng/toast/toast';
 
 @NgModule({
   declarations: [

@@ -1,13 +1,11 @@
 import { Injectable, OnInit } from '@angular/core';
 import * as jsPDF from 'jspdf';
 import * as moment from 'moment';
+import { MessageService } from 'primeng/api';
+import { Observable } from 'rxjs';
 
-import { Vendedor } from 'src/app/pages/vendedores/shared/models/vendedor';
 import { Pedidocabeca } from './../../../pedidos/pedidocabeca/shared/models/pedidocabeca';
 import { PedidocabecaService } from 'src/app/pages/pedidos/pedidocabeca/shared/services/pedidocabeca.service';
-import { VendedorService } from 'src/app/pages/vendedores/shared/services/vendedor.service';
-import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +17,7 @@ export class RelatorioService {
 
   constructor(
     private pedidocabecaService: PedidocabecaService,
+    private messageService: MessageService,
   ) { }
 
   gerarRelatorio(vendedorId: number, dtInicio: Date, dtFim: Date) {
@@ -55,7 +54,7 @@ export class RelatorioService {
     let numPag = 0;
 
     if (this.pedidos.length === 0) {
-      alert('Não foi encontrado nenhuma Venda!');
+      this.messageService.add({severity: 'warn', summary: 'Não foi encontrado nenhuma venda!'});
       return false;
      }
 
