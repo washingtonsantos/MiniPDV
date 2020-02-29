@@ -1,6 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 import * as jsPDF from 'jspdf';
 import * as moment from 'moment';
+import 'moment/locale/pt-br';
 import { MessageService } from 'primeng/api';
 import { Observable } from 'rxjs';
 
@@ -24,13 +25,17 @@ export class RelatorioService {
 
     const idVendedor = vendedorId;
     moment.locale('pt-BR');
+    const dtFinal = moment(dtFim, 'YYYY-MM-DDT23:59:59.000Z', true).toDate();
+    dtFinal.setHours( 23, 59, 59);
 
     if (idVendedor === null || String(idVendedor) === 'Todos') {
       this.pedidocabecaService.getAll().subscribe(response => {
         if (response) {
+
            this.pedidos = response.filter((f) =>
-            (moment.utc(f.data, 'YYYY-MM-DD', 'pt').toDate() >= moment(dtInicio, 'YYYY-MM-DD', 'pt').toDate()
-           &&  moment.utc(f.data, 'YYYY-MM-DD', 'pt').toDate() <= moment(dtFim, 'YYYY-MM-DD', 'pt').toDate()));
+          (dtInicio <= new Date(f.data)
+          && dtFinal >= new Date(f.data))
+          );
            this.gerarPDF();
         }
       });
@@ -38,8 +43,8 @@ export class RelatorioService {
       this.pedidocabecaService.getAll().subscribe(response => {
         if (response) {
            this.pedidos = response.filter((f) => f.vendedor.id === Number(idVendedor)
-           && (moment.utc(f.data, 'YYYY-MM-DD', 'pt').toDate() >= moment(dtInicio, 'YYYY-MM-DD', 'pt').toDate()
-           &&  moment.utc(f.data, 'YYYY-MM-DD', 'pt').toDate() <= moment(dtFim, 'YYYY-MM-DD', 'pt').toDate()));
+           && (dtInicio <= new Date(f.data)
+           && dtFinal >= new Date(f.data)));
            this.gerarPDF();
         }
       });
