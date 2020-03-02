@@ -1,4 +1,5 @@
 import { Component, OnInit, HostListener } from '@angular/core';
+import * as moment from 'moment';
 
 import { Produto } from '../../produtos/shared/models/produto.model';
 import { ProdutoService } from '../../produtos/shared/services/produto.service';
@@ -10,7 +11,7 @@ import { VendedorService } from '../../vendedores/shared/services/vendedor.servi
 import { PedidoitensService } from '../../pedidos/pedidoitens/shared/services/pedidoitens.service';
 import { Pedidocabeca } from '../../pedidos/pedidocabeca/shared/models/pedidocabeca';
 import { NgSelectConfig } from '@ng-select/ng-select';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { VendaService } from '../shared/services/venda.service';
 import { PedidocabecaService } from '../../pedidos/pedidocabeca/shared/services/pedidocabeca.service';
 declare var $: any;
@@ -31,15 +32,22 @@ export class VendaFormComponent implements OnInit {
   vendedores: Vendedor[] = [];
   vendedor: Vendedor = null;
 
+<<<<<<< HEAD
   searchText: string = '';
   searchDescricao: string = 'descrição do produto';
   valorTotal: number = 0;
+=======
+  // produtosEncontrados: string;
+  searchText = '';
+  searchDescricao = 'descrição do produto';
+  valorTotal = 0;
+>>>>>>> df50d283e430f3afd0e7df6cf8cfefec40404649
   produtoQTD: number;
-  produtoPreco: number = 0;
-  ultimoPedido: number = 0;
-  descontoUnt: number = 0;
+  produtoPreco = 0;
+  ultimoPedido = 0;
+  descontoUnt = 0;
 
-  mdlSampleIsOpen: boolean = false;
+  mdlSampleIsOpen = false;
 
   @HostListener('document:keyup', ['$event'])
   handleDeleteKeyboardEvent(event: KeyboardEvent) {
@@ -56,7 +64,8 @@ export class VendaFormComponent implements OnInit {
     private pedidoItensService: PedidoitensService,
     private pedidocabecaService: PedidocabecaService,
     private config: NgSelectConfig,
-    protected confirmationService: ConfirmationService) {
+    protected confirmationService: ConfirmationService,
+    private messageService: MessageService) {
     this.config.notFoundText = 'Item não encontrado';
   }
 
@@ -90,8 +99,16 @@ export class VendaFormComponent implements OnInit {
 
   addProduto(produto: Produto) {
     produto = this.produto;
+<<<<<<< HEAD
     let desconto = (produto.preco - Number(this.produtoPreco));
     this.pedidoItens.push(new Pedidoitens(this.pedidoItens.length + 1, 0, produto, this.produtoQTD, this.produto.preco, desconto, this.produtoPreco));
+=======
+    const desconto = (produto.preco - Number(this.produtoPreco));
+
+    this.pedidoItens.
+    push(new Pedidoitens(this.pedidoItens.length + 1, 0, produto, this.produtoQTD, this.produto.preco, desconto, this.produtoPreco));
+
+>>>>>>> df50d283e430f3afd0e7df6cf8cfefec40404649
     this.limparDadosFiltros(true);
     this.AtualizaValorTotal();
   }
@@ -100,8 +117,7 @@ export class VendaFormComponent implements OnInit {
     if (pedidoItem) {
       if (String(pedidoItem.quantidade) === '') {
         pedidoItem.precoUnitario = 0;
-      }
-      else {
+      } else {
         pedidoItem.precoUnitario = Number(pedidoItem.quantidade) * pedidoItem.produto.preco;
       }
     }
@@ -117,6 +133,7 @@ export class VendaFormComponent implements OnInit {
       accept: () => {
         if (this.pedidoItens.find(x => x.id === pedidoItem.id)) {
           this.pedidoItens.splice(this.pedidoItens.findIndex(x => x.id === pedidoItem.id), 1);
+          this.messageService.add({severity: 'success', summary: 'Item removido com sucesso'});
         }
         this.AtualizaValorTotal();
       },
@@ -124,10 +141,12 @@ export class VendaFormComponent implements OnInit {
   }
 
   AtualizaValorTotal() {
-    this.valorTotal = this.pedidoItens.reduce((sum, current) => sum + (current.precoUnitario * current.quantidade) - (current.desconto * current.quantidade), 0);
+    this.valorTotal = this.pedidoItens.reduce((sum, current) =>
+    sum + (current.precoUnitario * current.quantidade) - (current.desconto * current.quantidade), 0);
   }
 
   gravarPedido(pedidoItens: Pedidoitens[]) {
+<<<<<<< HEAD
     if (this.cliente && this.vendedor && pedidoItens) {
       const pedidoCabeca = Object.assign(new Pedidocabeca(this.ultimoPedido += 1, this.cliente, this.vendedor, new Date(), this.valorTotal));
       this.pedidocabecaService.create(pedidoCabeca).
@@ -138,14 +157,47 @@ export class VendaFormComponent implements OnInit {
       alert('Pedido Gravado com sucesso');
       this.limparDadosTela();
     }
+=======
+
+    let lastIdPedido;
+    const dataPedido = moment(new Date(), 'YYYY-MM-DD').toDate();
+
+    this.pedidocabecaService.getAll().
+    subscribe(s => {
+      if (s) {
+
+        if (s.length > 0) {
+        lastIdPedido = s.sort((a, b) => b.id - a.id).find(f => f).id;
+        }
+
+        if (lastIdPedido === undefined) { lastIdPedido = 0; }
+
+        if (this.cliente && this.vendedor && pedidoItens && lastIdPedido >= 0) {
+          const pedidoCabeca = Object.assign(
+            new Pedidocabeca(lastIdPedido += 1, this.cliente, this.vendedor, dataPedido, this.valorTotal));
+          this.pedidocabecaService.create(pedidoCabeca).
+            subscribe(
+              // tslint:disable-next-line: no-shadowed-variable
+              pedidoCabeca => {
+              this.actionsForSuccess(pedidoCabeca),
+              // tslint:disable-next-line: no-unused-expression
+              error => this.actionsForError(error);
+            });
+          this.messageService.add({severity: 'success', summary: 'Pedido Realizado com sucesso'});
+          // alert('Pedido Gravado com sucesso');
+          this.limparDadosTela();
+        }
+
+      }});
+>>>>>>> df50d283e430f3afd0e7df6cf8cfefec40404649
   }
 
   private actionsForSuccess(venda: Pedidocabeca) {
-    console.log("Sucesso")
+    console.log('Sucesso');
   }
 
   private actionsForError(venda: any) {
-    console.log("Ocorreu um erro")
+    console.log('Ocorreu um erro');
   }
 
   alterCliente(cliente: Cliente) {
@@ -171,17 +223,16 @@ export class VendaFormComponent implements OnInit {
       this.produtoQTD = null;
       this.produtoPreco = null;
       this.searchDescricao = 'descrição do produto';
-    }
-    else {
+    } else {
       this.produto = this.produtos.find(it => it.id === Number(searchText));
 
       if (this.produto) {
         this.produtoQTD = 1;
         this.produtoPreco = this.produto.preco;
         this.searchDescricao = this.produto.descricao;
-      }
-      else
+      } else {
         this.limparDadosFiltros(false);
+      }
     }
   }
 
@@ -191,12 +242,18 @@ export class VendaFormComponent implements OnInit {
       this.produtoPreco = null;
       this.searchDescricao = '';
       this.getProdutos();
-    }
-    else {
+    } else {
       this.getProdutos();
       this.produtosFilter = this.produtos.
-        filter((f) => f.descricao.toLowerCase().indexOf(searchDescricao.toLowerCase()) > -1 || f.descricao.toLowerCase() === searchDescricao.toLowerCase()).
+        filter((f) => f.descricao.
+        toLowerCase().
+        indexOf(searchDescricao.
+        toLowerCase()) > -1 || f.descricao.toLowerCase() === searchDescricao.toLowerCase()).
         sort((a, b) => a.id - b.id);
+<<<<<<< HEAD
+=======
+
+>>>>>>> df50d283e430f3afd0e7df6cf8cfefec40404649
       this.open();
     }
 
@@ -205,8 +262,7 @@ export class VendaFormComponent implements OnInit {
   editouQtdProduto() {
     if (String(this.produtoQTD) === '' || String(this.produtoQTD).trim() === '' || this.produtoQTD === undefined) {
       this.produtoPreco = 0;
-    }
-    else {
+    } else {
       this.produto = this.produtos.find(it => it.id === Number(this.searchText));
       this.produtoPreco = this.produto.preco;
     }
@@ -235,16 +291,24 @@ export class VendaFormComponent implements OnInit {
     this.produtoQTD = null;
     this.produtoPreco = null;
     this.searchDescricao = 'descrição do produto';
+<<<<<<< HEAD
     if (limparCodigo)
       this.searchText = '';
+=======
+
+    if (limparCodigo) {
+      this.searchText = '';
+    }
+
+>>>>>>> df50d283e430f3afd0e7df6cf8cfefec40404649
   }
 
   open() {
-    $('#ModalProdutos').modal('show')
+    $('#ModalProdutos').modal('show');
   }
 
   hide() {
-    $('#ModalProdutos').modal('hide')
+    $('#ModalProdutos').modal('hide');
   }
 
 }

@@ -1,5 +1,9 @@
 import { Injectable, OnInit } from '@angular/core';
 import * as jsPDF from 'jspdf';
+import * as moment from 'moment';
+import 'moment/locale/pt-br';
+import { MessageService } from 'primeng/api';
+import { Observable } from 'rxjs';
 
 import { Pedidocabeca } from './../../../pedidos/pedidocabeca/shared/models/pedidocabeca';
 import { PedidocabecaService } from 'src/app/pages/pedidos/pedidocabeca/shared/services/pedidocabeca.service';
@@ -9,19 +13,17 @@ import { PedidocabecaService } from 'src/app/pages/pedidos/pedidocabeca/shared/s
 })
 export class RelatorioService {
 
-  pedidocabeca: Pedidocabeca[] = [];
+  pedidos: Pedidocabeca[];
+  pedidos$: Observable<Pedidocabeca[]>;
 
   constructor(
     private pedidocabecaService: PedidocabecaService,
+    private messageService: MessageService,
   ) { }
 
-  getPedidosCabecas() {
-    this.pedidocabecaService.getAll()
-      .subscribe((response) => {
-        this.pedidocabeca = response;
-      });
-  }
+  gerarRelatorio(vendedorId: number, dtInicio: Date, dtFim: Date) {
 
+<<<<<<< HEAD
   gerarRelatorio(idVendedor: number, dtInicio: Date, dtFim: Date) {
 
     if (idVendedor > 0) {
@@ -39,6 +41,33 @@ export class RelatorioService {
           this.pedidocabeca = response;
         });
       this.gerarPDF();
+=======
+    const idVendedor = vendedorId;
+    moment.locale('pt-BR');
+    const dtFinal = moment(dtFim, 'YYYY-MM-DDT23:59:59.000Z', true).toDate();
+    dtFinal.setHours( 23, 59, 59);
+
+    if (idVendedor === null || String(idVendedor) === 'Todos') {
+      this.pedidocabecaService.getAll().subscribe(response => {
+        if (response) {
+
+           this.pedidos = response.filter((f) =>
+          (dtInicio <= new Date(f.data)
+          && dtFinal >= new Date(f.data))
+          );
+           this.gerarPDF();
+        }
+      });
+    } else if (idVendedor >= 1) {
+      this.pedidocabecaService.getAll().subscribe(response => {
+        if (response) {
+           this.pedidos = response.filter((f) => f.vendedor.id === Number(idVendedor)
+           && (dtInicio <= new Date(f.data)
+           && dtFinal >= new Date(f.data)));
+           this.gerarPDF();
+        }
+      });
+>>>>>>> df50d283e430f3afd0e7df6cf8cfefec40404649
     }
   }
 
@@ -49,11 +78,14 @@ export class RelatorioService {
     let total = 0;
     let numPag = 0;
 
-    if (this.pedidocabeca.length === 0) { return false; }
+    if (this.pedidos.length === 0) {
+      this.messageService.add({severity: 'warn', summary: 'Não foi encontrado nenhuma venda!'});
+      return false;
+     }
 
     this.montaCabecalho(documento);
 
-    this.pedidocabeca.forEach(pedido => {
+    this.pedidos.forEach(pedido => {
 
       if (pedido.cliente && pedido.vendedor) {
         this.addLinhaTable(documento, linha, false);
