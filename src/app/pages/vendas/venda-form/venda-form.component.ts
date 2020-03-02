@@ -31,7 +31,6 @@ export class VendaFormComponent implements OnInit {
   vendedores: Vendedor[] = [];
   vendedor: Vendedor = null;
 
-  // produtosEncontrados: string;
   searchText: string = '';
   searchDescricao: string = 'descrição do produto';
   valorTotal: number = 0;
@@ -51,7 +50,6 @@ export class VendaFormComponent implements OnInit {
   }
 
   constructor(
-    private vendaService: VendaService,
     private produtoService: ProdutoService,
     private clienteService: ClienteService,
     private vendedorService: VendedorService,
@@ -63,14 +61,9 @@ export class VendaFormComponent implements OnInit {
   }
 
   ngOnInit() {
-
     this.getClientes();
     this.getVendedores();
     this.getProdutos();
-  }
-
-  getPedidos() {
-
   }
 
   getClientes() {
@@ -96,26 +89,11 @@ export class VendaFormComponent implements OnInit {
   }
 
   addProduto(produto: Produto) {
-
     produto = this.produto;
     let desconto = (produto.preco - Number(this.produtoPreco));
-    // let pedido = this.pedidoItens.length > 0 ? this.pedidoItens.find((existe) => existe.produto.id === produto.id) : null;
-
-    // if (this.pedidoItens.length > 0 && (pedido !== undefined || pedido != null ))  {
-    //   let qtdATual = Number(pedido.quantidade);
-    //   const qtd = qtdATual += 1;
-    //   pedido.preco = produto.preco * qtd;
-    //   pedido.quantidade = qtd;
-    // }
-    // else {
-    //   this.pedidoItens.push(new Pedidoitens(this.pedidoItens.length + 1, 0, produto, this.produtoQTD, this.produtoPreco ));
-    // }
-
     this.pedidoItens.push(new Pedidoitens(this.pedidoItens.length + 1, 0, produto, this.produtoQTD, this.produto.preco, desconto, this.produtoPreco));
-
     this.limparDadosFiltros(true);
     this.AtualizaValorTotal();
-
   }
 
   editPedidoItem(pedidoItem: Pedidoitens) {
@@ -143,21 +121,6 @@ export class VendaFormComponent implements OnInit {
         this.AtualizaValorTotal();
       },
     });
-
-    //let podeRemover = await this.customConfirmationServiceService.excluir(pedidoItem.id);
-
-    // if (podeRemover) {
-    //   let item = this.pedidoItens.find((f) => f.id === pedidoItem.id);
-
-    // if (item.quantidade > 1) {
-    //   let qtdATual = Number(item.quantidade);
-    //   const qtd = qtdATual -= 1;
-    //   item.precoUnitario = qtd * this.produtos.find(x => x.id === item.produto.id).preco;
-    //   item.quantidade = qtd;
-    // }
-    // else {
-    //   item.precoUnitario = 0;
-    //   item.quantidade = 0;
   }
 
   AtualizaValorTotal() {
@@ -165,9 +128,6 @@ export class VendaFormComponent implements OnInit {
   }
 
   gravarPedido(pedidoItens: Pedidoitens[]) {
-
-
-
     if (this.cliente && this.vendedor && pedidoItens) {
       const pedidoCabeca = Object.assign(new Pedidocabeca(this.ultimoPedido += 1, this.cliente, this.vendedor, new Date(), this.valorTotal));
       this.pedidocabecaService.create(pedidoCabeca).
@@ -207,7 +167,6 @@ export class VendaFormComponent implements OnInit {
   }
 
   filtrarProdutoPorCodigo(searchText: string) {
-
     if (searchText === '') {
       this.produtoQTD = null;
       this.produtoPreco = null;
@@ -224,12 +183,9 @@ export class VendaFormComponent implements OnInit {
       else
         this.limparDadosFiltros(false);
     }
-
   }
 
   filtrarProdutoPorDescricao(searchDescricao: string) {
-
-
     if (searchDescricao === '') {
       this.produtoQTD = null;
       this.produtoPreco = null;
@@ -241,9 +197,6 @@ export class VendaFormComponent implements OnInit {
       this.produtosFilter = this.produtos.
         filter((f) => f.descricao.toLowerCase().indexOf(searchDescricao.toLowerCase()) > -1 || f.descricao.toLowerCase() === searchDescricao.toLowerCase()).
         sort((a, b) => a.id - b.id);
-
-      // this.produtos = this.produtosFilter;
-
       this.open();
     }
 
@@ -260,13 +213,11 @@ export class VendaFormComponent implements OnInit {
   }
 
   checkProduto(produto: Produto) {
-
     this.produto = this.produtos.find(it => it.id === produto.id);
     this.produtoQTD = 1;
     this.produtoPreco = this.produto.preco;
     this.searchText = String(this.produto.id);
     this.searchDescricao = this.produto.descricao;
-
     this.hide();
   }
 
@@ -280,16 +231,12 @@ export class VendaFormComponent implements OnInit {
     this.searchDescricao = '';
   }
 
-
   limparDadosFiltros(limparCodigo: boolean) {
-
     this.produtoQTD = null;
     this.produtoPreco = null;
     this.searchDescricao = 'descrição do produto';
-
     if (limparCodigo)
       this.searchText = '';
-
   }
 
   open() {

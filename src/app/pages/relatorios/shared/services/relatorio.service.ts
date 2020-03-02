@@ -1,10 +1,8 @@
 import { Injectable, OnInit } from '@angular/core';
 import * as jsPDF from 'jspdf';
 
-import { Vendedor } from 'src/app/pages/vendedores/shared/models/vendedor';
 import { Pedidocabeca } from './../../../pedidos/pedidocabeca/shared/models/pedidocabeca';
 import { PedidocabecaService } from 'src/app/pages/pedidos/pedidocabeca/shared/services/pedidocabeca.service';
-import { VendedorService } from 'src/app/pages/vendedores/shared/services/vendedor.service';
 
 @Injectable({
   providedIn: 'root'
@@ -24,18 +22,24 @@ export class RelatorioService {
       });
   }
 
-  gerarRelatorio(idVendedor: number, dtInicio: Date, dtFim: Date): boolean {
+  gerarRelatorio(idVendedor: number, dtInicio: Date, dtFim: Date) {
 
     if (idVendedor > 0) {
-      this.pedidocabeca = this.pedidocabeca.filter((f) => f.vendedor.id === Number(idVendedor) && (f.data >= dtInicio && f.data <= dtFim));
+      this.pedidocabecaService.getAll()
+        .subscribe((response) => {
+          this.pedidocabeca = response;
+          this.pedidocabeca.filter((f) => f.vendedor.id === Number(idVendedor) && (f.data >= dtInicio
+            && f.data <= dtFim));
+          this.gerarPDF();
+        });
     }
-
-    this.pedidocabecaService.getAll()
-      .subscribe((response) => {
-        this.pedidocabeca = response;
-      });
-
-    return this.gerarPDF();
+    else {
+      this.pedidocabecaService.getAll()
+        .subscribe((response) => {
+          this.pedidocabeca = response;
+        });
+      this.gerarPDF();
+    }
   }
 
   gerarPDF(): boolean {
